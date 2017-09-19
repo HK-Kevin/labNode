@@ -27,12 +27,12 @@
                     {
                         icon: 'el-icon-setting',
                         index: 'add',
-                        title: 'Add'
+                        title: '增加news'
                     },
                     {
                         icon: 'el-icon-menu',
                         index: 'update',
-                        title: 'Update'
+                        title: '更新news'
                     }
                 ]
             }

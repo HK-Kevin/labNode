@@ -14,7 +14,7 @@
                            :value="item.label"></el-option>
 
             </el-select>
-            <el-input v-model="select_word" placeholder="筛选关键词" class="handle-input mr10"></el-input>
+            <el-input v-model="searchData" placeholder="筛选关键词" class="handle-input mr10"></el-input>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
         </div>
         <el-table :data="titleData" border style="width: 100%" ref="multipleTable"
@@ -53,10 +53,11 @@
                 tableData: [],
                 cur_page: 1,
                 multipleSelection: [],
-                select_data: [{label: 'html'}, {label: 'css'}, {label: 'js'},{label: 'jquery'},{label: 'algorithm'},{label: 'ajax'},{label: 'es6'},{label: 'react'},{label: 'vue'},{label: 'webpack'},{label: 'node'},],
+                select_data: [{label: '学术'}, {label: '国际交流'}, {label: '文体活动'}],
                 select_cate: '',
                 select_word: '',
                 del_list: [],
+                searchData:'',
                 is_search: false,
                 titleData: [],
                 title_page: 1,
@@ -97,13 +98,22 @@
             getData(){
                 let self = this;
                 let findPageCon = {page: this.title_page, limit: this.limit};
-                self.$axios.post('/allTitles', findPageCon).then(res => {
+                self.$axios.post('/news/allTitles', findPageCon).then(res => {
                     self.titleData = res.data;
                 })
 
             },//获取数据
             search(){
-                this.is_search = true;
+                if (!this.searchData) {
+                    this.$message({
+                        message: '请输入查询内容',
+                        type: 'warning'
+                    });
+                    return;
+                }
+                this.$axios.get(`/news/search?title=${this.searchData}`).then(res => {
+                    this.titleData = res.data
+                })
             },
             filterTag(value, row) {
                 return row.tag === value;
@@ -115,8 +125,7 @@
             handleDelete(index, row) {
                 let self = this;
                 let deleteId = {id: [row._id]};
-                console.log(deleteId)
-                this.$axios.post('/deleteTitles', deleteId).then(res => {
+                this.$axios.post('/news/deleteTitles', deleteId).then(res => {
                     if (res.data.result) {
                         self.$message.success('删除成功');
                     } else {
@@ -144,7 +153,7 @@
                         message: '已取消删除'
                     });
                 });
-            },//确认是否刹车农户
+            },//确认是否删除
             delAll(){
                 const self = this,
                     length = self.multipleSelection.length;
@@ -158,7 +167,7 @@
                     arr.push(item._id)
                 })
                 let deleteData = {id: arr};
-                this.$axios.post('/deleteTitles', deleteData).then(res => {
+                this.$axios.post('/news/deleteTitles', deleteData).then(res => {
                     if (res.data.result) {
                         self.$message.success('删除成功');
                     } else {
@@ -177,7 +186,7 @@
                     this.getData()
                 } else {
                     let searchCon = {page: this.title_page, limit: this.limit, type: val};
-                    this.$axios.post('/typeTitles', searchCon).then(res => {
+                    this.$axios.post('/news/typeTitles', searchCon).then(res => {
                         this.titleData = res.data
                     })
                 }

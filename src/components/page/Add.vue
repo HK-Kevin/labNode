@@ -12,8 +12,7 @@
                 </el-form-item>
                 <el-form-item label="类型">
                     <el-checkbox-group v-model="form.type">
-                        <el-checkbox v-for="(item,index) in type" :key="index" :label="item"
-                                     name="type"></el-checkbox>
+                        <el-checkbox v-for="(item,index) in type" :key="index" :label="item" name="type"></el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="正文">
@@ -27,8 +26,6 @@
 </template>
 
 <script>
-    import 'highlight.js/styles/atom-one-light.css'
-    import hljs from 'highlight.js'
     import E from 'wangeditor'
     export default {
         data: function () {
@@ -50,7 +47,7 @@
             editor.customConfig.onchange = (html) => {
                 this.form.content = html;
             };
-            editor.customConfig.uploadImgServer = 'http://47.94.94.52:3000/upload' ; // 上传图片到服务器
+            editor.customConfig.uploadImgServer = 'http://192.168.205.123:714/news/upload' ; // 上传图片到服务器
             editor.customConfig.uploadFileName = 'avator';
             editor.create()
         },
@@ -62,7 +59,7 @@
                 console.log(this.form);
                 this.$message.success('提交成功！');
                 this.$http({
-                    url: '/news',
+                    url: '/news/add',
                     method: 'post',
                     data: this.form
                 })
