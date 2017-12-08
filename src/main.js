@@ -8,16 +8,16 @@ import 'element-ui/lib/theme-default/index.css';    // 默认主题
 
 import "babel-polyfill";
 let baseUrl = 'http://47.94.94.52:714';
-let mockUrl =  'http://192.168.205.123:714';
+let mockUrl =  'http://47.94.94.52:714';
 
 
 Vue.use(ElementUI);
 
 
-let instance = axios.create({baseURL: mockUrl});
+let instance = axios.create({baseURL: baseUrl});
 Vue.prototype.$http = instance;
 
-axios.defaults.baseURL = mockUrl;
+axios.defaults.baseURL = baseUrl;
 Vue.prototype.$axios = axios;
 new Vue({
     router,

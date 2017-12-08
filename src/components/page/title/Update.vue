@@ -16,17 +16,18 @@
             </el-select>
             <el-input v-model="searchData" placeholder="筛选关键词" class="handle-input mr10"></el-input>
             <el-button type="primary" icon="search" @click="search">搜索</el-button>
+            <el-button type="primary" icon="plus" @click="add">添加</el-button>
         </div>
         <el-table :data="titleData" border style="width: 100%" ref="multipleTable"
                   @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55"></el-table-column>
-            <el-table-column prop="_id" label="id" sortable width="150">
+            <el-table-column prop="_id" label="id" sortable >
             </el-table-column>
-            <el-table-column prop="title" label="title" width="150">
+            <el-table-column prop="title" label="标题" >
             </el-table-column>
-            <el-table-column prop="type" label="type" width="150">
+            <el-table-column prop="type" label="类型" >
             </el-table-column>
-            <el-table-column prop="date" label="date">
+            <el-table-column prop="date" label="日期">
             </el-table-column>
             <el-table-column label="操作" width="180">
                 <template scope="scope">
@@ -41,15 +42,33 @@
         <el-pagination
             @current-change="handlePage"
             layout="prev, pager, next"
-            :total="1000">
+            :total="totalPage"
+            :page-size="10">
         </el-pagination>
+        <el-dialog
+            title="添加文章"
+            :visible.sync="dialogVisible"
+            width="80%">
+        <AddTitle @updateTable= "addUpdateTable">
+        </AddTitle>
+        </el-dialog>
+        <el-dialog
+            title="更改文章"
+            :visible.sync="updateDialogVisible"
+            width="80%">
+            <OneTitle ref="uploadDialog"  @updateTableData= "updateTable"></OneTitle>
+        </el-dialog>
     </div>
 </template>
 
 <script>
+    import AddTitle from './AddTitle.vue'
+    import OneTitle from './OneTitle.vue'
     export default {
         data() {
             return {
+                dialogVisible:false,
+                updateDialogVisible:false,
                 tableData: [],
                 cur_page: 1,
                 multipleSelection: [],
@@ -61,8 +80,8 @@
                 is_search: false,
                 titleData: [],
                 title_page: 1,
-                totalPage: 100,
-                limit: 3,
+                totalPage: 2,
+                limit: 10,
             }
         },
         created(){
@@ -95,14 +114,17 @@
                 this.title_page = val;
                 this.getData();
             },
-            getData(){
+
+            getData()   {
                 let self = this;
                 let findPageCon = {page: this.title_page, limit: this.limit};
                 self.$axios.post('/news/allTitles', findPageCon).then(res => {
-                    self.titleData = res.data;
+                    self.titleData = res.data.data;
+                    self.totalPage = res.data.count;
                 })
 
             },//获取数据
+
             search(){
                 if (!this.searchData) {
                     this.$message({
@@ -115,13 +137,18 @@
                     this.titleData = res.data
                 })
             },
+
             filterTag(value, row) {
                 return row.tag === value;
             },
+
             handleEdit(index, row) {
                 let id = row._id;
-                this.$router.push(`/oneTitle/${id}`)
+                this.updateDialogVisible = true;
+               this.$refs.uploadDialog.findOneTitle(id)
+
             },
+
             handleDelete(index, row) {
                 let self = this;
                 let deleteId = {id: [row._id]};
@@ -136,6 +163,7 @@
 
                 this.$message.error('删除第' + (index + 1) + '行');
             },//单个删除
+
             confirmAllDel(){
                 this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
                     confirmButtonText: '确定',
@@ -154,6 +182,7 @@
                     });
                 });
             },//确认是否删除
+
             delAll(){
                 const self = this,
                     length = self.multipleSelection.length;
@@ -178,9 +207,11 @@
 
 
             }, //删除所有
+
             handleSelectionChange(val) {
                 this.multipleSelection = val;
             },
+
             selectTypeData(val){
                 if (val.length == 0) {
                     this.getData()
@@ -191,12 +222,28 @@
                     })
                 }
 
+            },
+
+            add() {
+                this.dialogVisible = true;
+            },
+            addUpdateTable(){
+                this.dialogVisible = false;
+                this.selectTypeData('')
+            },
+            updateTable(){
+                this.updateDialogVisible = false;
+                this.selectTypeData('')
             }
-        }
+        },
+        components:{AddTitle,OneTitle}
     }
 </script>
 
 <style scoped>
+    .table{
+        width: 100%;
+    }
     .handle-box {
         margin-bottom: 20px;
     }

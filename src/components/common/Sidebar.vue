@@ -25,14 +25,9 @@
             return {
                 items: [
                     {
-                        icon: 'el-icon-setting',
-                        index: 'add',
-                        title: '增加news'
-                    },
-                    {
                         icon: 'el-icon-menu',
-                        index: 'update',
-                        title: '更新news'
+                        index: 'newsManager',
+                        title: '新闻管理'
                     }
                 ]
             }

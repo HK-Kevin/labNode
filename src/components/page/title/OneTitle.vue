@@ -16,7 +16,7 @@
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item label="正文">
-                    <div id="editorElem" style="text-align:left;width: 200%"></div>
+                    <div id="editorElem" style="text-align:left;width: 140%"></div>
                 </el-form-item>
             </el-form>
         </div>
@@ -49,31 +49,29 @@
             editor.customConfig.onchange = (html) => {
                 this.form.content = html;
             };
-            editor.customConfig.uploadImgServer = 'http://192.168.205.123:714/news/upload' ; // 上传图片到服务器
+            editor.customConfig.uploadImgServer = 'http://47.94.94.52:714/news/upload' ; // 上传图片到服务器
             editor.customConfig.uploadFileName = 'avator';
             editor.create();
             this.editor = editor;
+            },
+        methods: {
+            createEditor() {
 
             },
-        created(){
-            let idObj = this.$route.params;
-            this.$axios.get(`/news/oneTitle?id=${idObj.id}`).then(res => {
-                this.form.title =res.data.title;
-                this.form._id =res.data._id;
-                this.form.type =[res.data.type];
-                this.editor.txt.html(res.data.content);
-            })
-        },
-        watch:{
-
-        },
-        methods: {
-            onSubmit() {
-                this.$message.success('提交成功！');
+            findOneTitle(id) {
+                this.$axios.get(`/news/oneTitle?id=${id}`).then(res => {
+                    this.form.title =res.data.title;
+                    this.form._id =res.data._id;
+                    this.form.type =[res.data.type];
+                    this.editor.txt.html(res.data.content);
+                })
             },
             update(){
                 this.$axios.put(`/news/updateTitle`,this.form).then(res => {
-                    if(res.data.result){this.$message.success('更新成功！');}
+                    if(res.data.result){
+                        this.$message.success('更新成功！');
+                        this.$emit('updateTableData');
+                    }
                 })
             }
         },
